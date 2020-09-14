@@ -20,9 +20,9 @@ module.exports = {
 			server._watch('./app/**/*.html');
 		},
 		contentBase: path.join(__dirname, 'app'),
-		hot: true, //allows browser to talk with files. if files change, browser automatically refreshes.
+		hot: true, //hot swap of modules. allows browser to update when files do.
 		port: 3000,
-		host: '0.0.0.0', //host allows other devices in network to view live page. connect using (ipaddress):3000
+		host: 'localhost', //host allows other devices in network to view live page. connect using (ipaddress):3000
 	},
 	mode: 'development',
 	module: {
