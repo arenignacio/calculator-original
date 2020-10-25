@@ -22,6 +22,8 @@ const infixToPostfix = function (input) {
 		}
 	}
 
+	//#debug: 1+2+3(4-3)
+
 	//groups numeric values together
 	for (let i = 0; i <= inputArr.length - 1; ) {
 		!isNaN(inputArr[i]) && !isNaN(inputArr[i + 1])
@@ -43,10 +45,10 @@ const infixToPostfix = function (input) {
 				return 4;
 			case '+' || '-':
 				return 3;
-			case '=':
+			case '(':
 				return 2;
-			default:
-				return true;
+			case '=':
+				return 1;
 		}
 	};
 
@@ -63,21 +65,26 @@ const infixToPostfix = function (input) {
 		}
 	}
 
+	if (['+', '-'].includes(inputArr[0])) {
+		inputArr.unshift('0');
+	}
+
+	//TODO: create negative or positive conotation
 	//evaluate inputArr and convert to postfix
 	inputArr.forEach((element, idx, arr) => {
+		//if alphanumeric
 		if (/\w/.test(element)) {
 			result += `${element} `;
-		} else if (
-			(isNaN(element) && topOfStack() === undefined) ||
-			element === '('
-		) {
+		} else if (element === '(') {
 			stack.push(element);
 		} else if (element === ')') {
+			//if element is closing parentheses, empty stack until open parantheses has been found
 			while (topOfStack() !== '(') {
 				result += `${stack.pop()} `;
 			}
 			stack.pop();
 		} else {
+			//if element is an operator, compare precedence with top of stack
 			while (getPrecedence(element) <= getPrecedence(topOfStack())) {
 				result += `${stack.pop()} `;
 			}
