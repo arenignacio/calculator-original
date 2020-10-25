@@ -10,19 +10,16 @@ const infixToPostfix = function (input) {
 	};
 
 	//validator
-	if (['+', '-'].includes(inputArr[0])) {
-		inputArr.unshift('0');
-	} else if (isNaN(inputArr[0])) {
+	if (isNaN(inputArr[0]) && !['+', '-'].includes(inputArr[0])) {
 		return 'invalid entry';
 	}
 
+	//if two consecutive operator are entered
 	for (const [index, value] of inputArr.entries()) {
 		if (isOperator(value) && isOperator(inputArr[index + 1])) {
 			return 'invalid entry';
 		}
 	}
-
-	//#debug: 1+2+3(4-3)
 
 	//groups numeric values together
 	for (let i = 0; i <= inputArr.length - 1; ) {
@@ -41,7 +38,7 @@ const infixToPostfix = function (input) {
 		switch (symbol) {
 			case '^':
 				return 5;
-			case '*' || '/':
+			case '*' || '/' || '~':
 				return 4;
 			case '+' || '-':
 				return 3;
@@ -65,14 +62,10 @@ const infixToPostfix = function (input) {
 		}
 	}
 
-	if (['+', '-'].includes(inputArr[0])) {
-		inputArr.unshift('0');
-	}
-
-	//TODO: create negative or positive conotation
 	//evaluate inputArr and convert to postfix
-	inputArr.forEach((element, idx, arr) => {
-		//if alphanumeric
+	for (let idx = 0; idx <= inputArr.length - 1; ) {
+		let element = inputArr[idx];
+
 		if (/\w/.test(element)) {
 			result += `${element} `;
 		} else if (element === '(') {
@@ -83,6 +76,9 @@ const infixToPostfix = function (input) {
 				result += `${stack.pop()} `;
 			}
 			stack.pop();
+		} else if (['+', '-'].includes(element) && idx === 0) {
+			result += `0 ${inputArr[idx + 1]} ${element} `;
+			idx++;
 		} else {
 			//if element is an operator, compare precedence with top of stack
 			while (getPrecedence(element) <= getPrecedence(topOfStack())) {
@@ -90,7 +86,8 @@ const infixToPostfix = function (input) {
 			}
 			stack.push(element);
 		}
-	});
+		idx++;
+	}
 
 	//push remaining operators in stack to result after each element has been evaluated
 	while (stack.length > 0) {
