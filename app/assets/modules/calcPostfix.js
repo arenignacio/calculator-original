@@ -11,8 +11,6 @@ const calculate = (postFixStr) => {
 					3,
 					Number(postFixArr[i - 2]) + Number(postFixArr[i - 1])
 				);
-				console.log(`current index is +. splice, counter reset`);
-				console.log(postFixArr);
 				i = 0;
 			} else if (postFixArr[i] === '-' && !isNaN(postFixArr[i - 2])) {
 				postFixArr.splice(
@@ -20,9 +18,6 @@ const calculate = (postFixStr) => {
 					3,
 					Number(postFixArr[i - 2]) - Number(postFixArr[i - 1])
 				);
-				console.log(`current index is -. splice, counter reset`);
-				console.log(`current position is ${postFixArr[i]}`);
-				console.log(postFixArr);
 				i = 0;
 			} else if (postFixArr[i] === '*' && !isNaN(postFixArr[i - 2])) {
 				postFixArr.splice(
@@ -30,9 +25,6 @@ const calculate = (postFixStr) => {
 					3,
 					Number(postFixArr[i - 2]) * Number(postFixArr[i - 1])
 				);
-				console.log(`current index is *. splice, counter reset`);
-				console.log(`current position is ${postFixArr[i]}`);
-				console.log(postFixArr);
 				i = 0;
 			} else if (postFixArr[i] === '/' && !isNaN(postFixArr[i - 2])) {
 				postFixArr.splice(
@@ -40,9 +32,6 @@ const calculate = (postFixStr) => {
 					3,
 					Number(postFixArr[i - 2]) / Number(postFixArr[i - 1])
 				);
-				console.log(`current index is /. splice, counter reset`);
-				console.log(`current position is ${postFixArr[i]}`);
-				console.log(postFixArr);
 				i = 0;
 			} else if (postFixArr[i] === '^' && !isNaN(postFixArr[i - 2])) {
 				postFixArr.splice(
@@ -50,16 +39,9 @@ const calculate = (postFixStr) => {
 					3,
 					Math.pow(Number(postFixArr[i - 2]), Number(postFixArr[i - 1]))
 				);
-				console.log(`current index is ^. splice, counter reset`);
-				console.log(`current position is ${postFixArr[i]}`);
-				console.log(postFixArr);
 				i = 0;
 			} else if (/\w/.test(postFixArr[i])) {
-				console.log(`is alphanumeric. counter: + 1`);
-				console.log(`current position is ${postFixArr[i]}`);
-				console.log(postFixArr);
 				i++;
-				console.log(`new counter. ${i}`);
 			} else if (isNaN(postFixArr[i]) && isNaN(postFixArr[i - 2])) {
 				return 'incorrect formula';
 			}

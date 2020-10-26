@@ -2,7 +2,7 @@
 const infixToPostfix = function (input) {
 	let result = '';
 	const stack = [];
-	let inputArr = input.split('');
+	let inputArr = input.replace(/\s/g, '').split('');
 
 	//check if operator
 	const isOperator = function (char) {
@@ -10,22 +10,36 @@ const infixToPostfix = function (input) {
 	};
 
 	//validator
-	if (isNaN(inputArr[0]) && !['+', '-'].includes(inputArr[0])) {
+	if (['+', '-', '.'].includes(inputArr[0])) {
+	} else if (isNaN(inputArr[0])) {
 		return 'invalid entry';
 	}
 
-	//if two consecutive operator are entered
 	for (const [index, value] of inputArr.entries()) {
 		if (isOperator(value) && isOperator(inputArr[index + 1])) {
+			return 'invalid entry';
+		} else if (
+			value === '.' &&
+			isOperator(inputArr[index - 1]) &&
+			isOperator(inputArr[index + 1])
+		) {
 			return 'invalid entry';
 		}
 	}
 
 	//groups numeric values together
 	for (let i = 0; i <= inputArr.length - 1; ) {
-		!isNaN(inputArr[i]) && !isNaN(inputArr[i + 1])
-			? (inputArr.splice(i, 2, inputArr[i] + inputArr[i + 1]), (i = 0))
-			: i++;
+		if (inputArr[0] === '.') {
+			inputArr.splice(i, 2, `0${inputArr[i] + inputArr[i + 1]}`), (i = 0);
+		} else if (isOperator(inputArr[i]) && inputArr[i + 1] === '.') {
+			inputArr.splice(i + 1, 1, `0.`), (i = 0);
+		} else if (inputArr[i + 1] === '.' && !inputArr[i].includes('.')) {
+			inputArr.splice(i, 2, inputArr[i] + inputArr[i + 1]), (i = 0);
+		} else if (!isNaN(inputArr[i]) && !isNaN(inputArr[i + 1])) {
+			inputArr.splice(i, 2, inputArr[i] + inputArr[i + 1]), (i = 0);
+		} else {
+			i++;
+		}
 	}
 
 	//get top of stack or (last element of stack array)
