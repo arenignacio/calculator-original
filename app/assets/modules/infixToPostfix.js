@@ -4,14 +4,34 @@ const infixToPostfix = function (input) {
 	const stack = [];
 	let inputArr = input.replace(/\s/g, '').split('');
 
-	//check if operator
+	//#check functions
 	const isOperator = function (char) {
-		return ['+', '-', '/', '*', '^', '~', '%'].includes(char);
+		return ['+', '-', '/', '*', '^', '~'].includes(char);
 	};
 
-	//validator
-	if (['+', '-', '.'].includes(inputArr[0])) {
-	} else if (isNaN(inputArr[0])) {
+	const isSpecialChar = function (char) {
+		return ['.', '%'].includes(char);
+	};
+
+	const isEqualQty = function (element1, element2, iterative) {
+		let count = [0, 0];
+
+		for (const cur of iterative) {
+			if (cur === element1) {
+				count[0]++;
+			} else if (cur === element2) {
+				count[1]++;
+			}
+		}
+
+		return count[0] === count[1];
+	};
+
+	//#validator
+	if (
+		(!['+', '-', '.', '('].includes(inputArr[0]) && isNaN(inputArr[0])) ||
+		!isEqualQty('(', ')', inputArr)
+	) {
 		return 'invalid entry';
 	}
 
@@ -19,10 +39,12 @@ const infixToPostfix = function (input) {
 		if (isOperator(value) && isOperator(inputArr[index + 1])) {
 			return 'invalid entry';
 		} else if (
-			value === '.' &&
+			isSpecialChar(value) &&
 			isOperator(inputArr[index - 1]) &&
 			isOperator(inputArr[index + 1])
 		) {
+			return 'invalid entry';
+		} else if (value === '%' && isNaN(inputArr[index - 1])) {
 			return 'invalid entry';
 		}
 	}
@@ -80,7 +102,18 @@ const infixToPostfix = function (input) {
 	for (let idx = 0; idx <= inputArr.length - 1; ) {
 		let element = inputArr[idx];
 
-		if (/\w/.test(element)) {
+		if (!isNaN(element) && inputArr[idx + 1] === '%') {
+			!isNaN(inputArr[idx + 2])
+				? inputArr.splice(
+						idx,
+						3,
+						`${
+							(Number(inputArr[idx]) / 100) * Number(inputArr[idx + 2])
+						} `
+				  )
+				: inputArr.splice(idx, 2, `${Number(inputArr[idx]) / 100} `);
+			result += inputArr[idx];
+		} else if (/\w/.test(element)) {
 			result += `${element} `;
 		} else if (element === '(') {
 			stack.push(element);

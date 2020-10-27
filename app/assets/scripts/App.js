@@ -26,20 +26,6 @@ Symbol      Name
 */
 
 //.compare if two elements in an array have the same quantity
-const isEqualQty = function (element1, element2, iterative) {
-	let count = [0, 0];
-
-	for (const cur of iterative) {
-		if (cur === element1) {
-			count[0]++;
-		} else if (cur === element2) {
-			count[1]++;
-		}
-	}
-
-	return count[0] === count[1];
-};
-
 const submitBtn = document.querySelector('input[type="button"]');
 
 submitBtn.addEventListener('click', () => {
@@ -47,19 +33,12 @@ submitBtn.addEventListener('click', () => {
 
 	const showResult = document.getElementById('result');
 
-	console.log(`test`);
-
 	//validator. prevents user from entering invalid formula or alphabet characters.
-	if (
-		calculate(infixToPostfix(input)) === 'incorrect formula' ||
-		/[a-zA-Z]/.test(input)
-	) {
-		console.log(/[0-9]/.test(input[0]));
+	if (infixToPostfix(input) === 'invalid entry' || /[a-zA-Z]/.test(input)) {
 		document.getElementById('result').innerHTML =
 			'Please enter numerical values only and make sure each operator has two operands to evaluate';
 		document.getElementById('rpn').innerHTML = '';
 	} else {
-		console.log(/[0-9]/.test(input[0]));
 		document.getElementById(
 			'result'
 		).innerHTML = `reverse polish notation: ${infixToPostfix(input)}`;
