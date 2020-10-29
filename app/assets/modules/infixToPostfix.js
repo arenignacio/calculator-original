@@ -1,10 +1,12 @@
+//TODO: needs more logic for negative numbers. negative preluded by parenthesis needs to be recognized.
+
 //.converts string of infix to postfix.
 const infixToPostfix = function (input) {
 	let result = '';
 	const stack = [];
 	let inputArr = input.replace(/\s/g, '').split('');
 
-	//#check functions
+	//#checks
 	const isOperator = function (char) {
 		return ['+', '-', '/', '*', '^', '~'].includes(char);
 	};
@@ -25,6 +27,30 @@ const infixToPostfix = function (input) {
 		}
 
 		return count[0] === count[1];
+	};
+
+	//get top of stack or (last element of stack array)
+	const topOfStack = () => {
+		return stack[stack.length - 1];
+	};
+
+	//evaluates level of symbol
+	const getPrecedence = function (symbol) {
+		switch (symbol) {
+			case '^':
+				return 5;
+			case '*':
+			case '/':
+			case '~':
+				return 4;
+			case '+':
+			case '-':
+				return 3;
+			case '(':
+				return 2;
+			case '=':
+				return 1;
+		}
 	};
 
 	//#validator
@@ -49,43 +75,32 @@ const infixToPostfix = function (input) {
 		}
 	}
 
+	//#grouper
 	//groups numeric values together
 	for (let i = 0; i <= inputArr.length - 1; ) {
-		if (inputArr[0] === '.') {
-			inputArr.splice(i, 2, `0${inputArr[i] + inputArr[i + 1]}`), (i = 0);
-		} else if (isOperator(inputArr[i]) && inputArr[i + 1] === '.') {
-			inputArr.splice(i + 1, 1, `0.`), (i = 0);
+		if (inputArr[0] === '.' && !isNaN(inputArr[1])) {
+			inputArr.splice(i, 2, `0${inputArr[i] + inputArr[i + 1]}`);
+		} else if (
+			(isOperator(inputArr[i]) || ['(', ')'].includes(inputArr[i])) &&
+			inputArr[i + 1] === '.'
+		) {
+			inputArr.splice(i + 1, 1, `0.`);
 		} else if (inputArr[i + 1] === '.' && !inputArr[i].includes('.')) {
-			inputArr.splice(i, 2, inputArr[i] + inputArr[i + 1]), (i = 0);
+			inputArr.splice(i, 2, inputArr[i] + inputArr[i + 1]);
+		} else if (
+			['+', '-'].includes(inputArr[i]) &&
+			['(', '%'].includes(inputArr[i - 1]) &&
+			!isNaN(inputArr[i + 1])
+		) {
+			inputArr.splice(i, 2, inputArr[i] + inputArr[i + 1]);
 		} else if (!isNaN(inputArr[i]) && !isNaN(inputArr[i + 1])) {
-			inputArr.splice(i, 2, inputArr[i] + inputArr[i + 1]), (i = 0);
+			inputArr.splice(i, 2, inputArr[i] + inputArr[i + 1]);
 		} else {
 			i++;
 		}
 	}
 
-	//get top of stack or (last element of stack array)
-	const topOfStack = () => {
-		return stack[stack.length - 1];
-	};
-
-	//evaluates level of symbol
-	const getPrecedence = function (symbol) {
-		switch (symbol) {
-			case '^':
-				return 5;
-			case '*' || '/' || '~':
-				return 4;
-			case '+' || '-':
-				return 3;
-			case '(':
-				return 2;
-			case '=':
-				return 1;
-		}
-	};
-
-	//checks if parentheses if preceded by a number of operator. if it's alphanumeric, it adds a "*" between
+	//checks if parentheses if preceded by a number of operator. if it's alphanumeric, it inserts a '*' at beginning of the problem inside the parentheses so the solution inside the parentheses gets multiplied to the number outside before solving the rest of the problem
 	if (input.includes('(')) {
 		for (const [index, value] of inputArr.entries()) {
 			if (
@@ -128,7 +143,7 @@ const infixToPostfix = function (input) {
 			idx++;
 		} else {
 			//if element is an operator, compare precedence with top of stack
-			while (getPrecedence(element) <= getPrecedence(topOfStack())) {
+			if (getPrecedence(element) <= getPrecedence(topOfStack())) {
 				result += `${stack.pop()} `;
 			}
 			stack.push(element);
