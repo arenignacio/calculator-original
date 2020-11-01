@@ -1,5 +1,3 @@
-//TODO: needs more logic for negative numbers. negative preluded by parenthesis needs to be recognized.
-
 //.converts string of infix to postfix.
 const infixToPostfix = function (input) {
 	let result = '';
@@ -89,10 +87,12 @@ const infixToPostfix = function (input) {
 			inputArr.splice(i, 2, inputArr[i] + inputArr[i + 1]);
 		} else if (
 			['+', '-'].includes(inputArr[i]) &&
-			['(', '%'].includes(inputArr[i - 1]) &&
+			['('].includes(inputArr[i - 1]) &&
 			!isNaN(inputArr[i + 1])
 		) {
 			inputArr.splice(i, 2, inputArr[i] + inputArr[i + 1]);
+		} else if (['+', '-'].includes(inputArr[0]) && !isNaN(inputArr[1])) {
+			inputArr.splice(i, 2, inputArr[0] + inputArr[1]);
 		} else if (!isNaN(inputArr[i]) && !isNaN(inputArr[i + 1])) {
 			inputArr.splice(i, 2, inputArr[i] + inputArr[i + 1]);
 		} else {
@@ -138,9 +138,6 @@ const infixToPostfix = function (input) {
 				result += `${stack.pop()} `;
 			}
 			stack.pop();
-		} else if (['+', '-'].includes(element) && idx === 0) {
-			result += `0 ${inputArr[idx + 1]} ${element} `;
-			idx++;
 		} else {
 			//if element is an operator, compare precedence with top of stack
 			if (getPrecedence(element) <= getPrecedence(topOfStack())) {
